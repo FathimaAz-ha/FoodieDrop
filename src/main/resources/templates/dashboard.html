@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - FoodieDrop</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-utensils"></i> FoodieDrop Admin
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Back to Store</a></li>
+                <li><a href="#" class="nav-link" onclick="handleLogout()">Logout</a></li>
+            </ul>
+            <div class="nav-icons">
+                <button class="theme-toggle" title="Toggle theme">
+                    <i class="fas fa-moon"></i> Dark
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Admin Dashboard -->
+    <section class="admin-section">
+        <div class="admin-container">
+            <!-- Sidebar -->
+            <div class="admin-sidebar">
+                <div class="sidebar-menu">
+                    <button class="sidebar-btn active" onclick="switchTab('dashboard')">
+                        <i class="fas fa-chart-line"></i> Dashboard
+                    </button>
+                    <button class="sidebar-btn" onclick="switchTab('products')">
+                        <i class="fas fa-box"></i> Products
+                    </button>
+                    <button class="sidebar-btn" onclick="switchTab('orders')">
+                        <i class="fas fa-receipt"></i> Orders
+                    </button>
+                    <button class="sidebar-btn" onclick="switchTab('customers')">
+                        <i class="fas fa-users"></i> Customers
+                    </button>
+                    <button class="sidebar-btn" onclick="switchTab('analytics')">
+                        <i class="fas fa-chart-bar"></i> Analytics
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="admin-content">
+                <!-- Dashboard Tab -->
+                <div id="dashboardTab" class="admin-tab active">
+                    <h2>Dashboard Overview</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <i class="fas fa-shopping-bag"></i>
+                            <h4>Total Orders</h4>
+                            <p class="stat-number">1,234</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-dollar-sign"></i>
+                            <h4>Total Revenue</h4>
+                            <p class="stat-number">$45,678</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-box"></i>
+                            <h4>Products</h4>
+                            <p class="stat-number">567</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-users"></i>
+                            <h4>Active Customers</h4>
+                            <p class="stat-number">892</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Tab -->
+                <div id="productsTab" class="admin-tab">
+                    <div class="tab-header">
+                        <h2>Manage Products</h2>
+                        <button class="btn btn-primary" onclick="openProductModal()">
+                            <i class="fas fa-plus"></i> Add New Product
+                        </button>
+                    </div>
+
+                    <!-- Add/Edit Product Form -->
+                    <div id="productFormSection" class="form-section hidden">
+                        <h3>Add/Edit Product</h3>
+                        <form id="productForm" onsubmit="handleProductSubmit(event)">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Product Name</label>
+                                    <input type="text" id="productName" placeholder="Enter product name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Category</label>
+                                    <select id="productCategory" required>
+                                        <option value="">Select Category</option>
+                                        <option value="vegetables">Vegetables</option>
+                                        <option value="fruits">Fruits</option>
+                                        <option value="dairy">Dairy</option>
+                                        <option value="beverages">Beverages</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Price ($)</label>
+                                    <input type="number" id="productPrice" placeholder="0.00" step="0.01" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Stock Quantity</label>
+                                    <input type="number" id="productStock" placeholder="0" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea id="productDescription" placeholder="Enter product description" rows="4" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Product Image URL</label>
+                                <input type="url" id="productImage" placeholder="https://..." required>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Save Product</button>
+                                <button type="button" class="btn btn-secondary" onclick="closeProductForm()">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Products Table -->
+                    <div class="table-section">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Product Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTableBody">
+                                <!-- Products will be loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Orders Tab -->
+                <div id="ordersTab" class="admin-tab">
+                    <h2>Recent Orders</h2>
+                    <div class="table-section">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTableBody">
+                                <!-- Orders will be loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Customers Tab -->
+                <div id="customersTab" class="admin-tab">
+                    <h2>Customers</h2>
+                    <div class="table-section">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Customer ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Orders</th>
+                                    <th>Total Spent</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customersTableBody">
+                                <!-- Customers will be loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Analytics Tab -->
+                <div id="analyticsTab" class="admin-tab">
+                    <h2>Analytics</h2>
+                    <div class="analytics-grid">
+                        <div class="chart-container">
+                            <h3>Sales by Category</h3>
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3>Monthly Revenue</h3>
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Modal for Quick Actions -->
+    <div id="actionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeActionModal()">&times;</span>
+            <div id="actionModalBody"></div>
+        </div>
+    </div>
+
+    <script src="../static/js/dashboard.js"></script>
+    <script src="../static/js/theme.js"></script>
+</body>
+</html>
