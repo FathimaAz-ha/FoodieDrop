@@ -1,4 +1,5 @@
 // ==================== ADMIN DASHBOARD FUNCTIONS ====================
+let productList = [];
 
 const STORAGE_KEYS = {
     PRODUCTS: 'foodiedrop_products',
@@ -38,68 +39,84 @@ function switchTab(tabName) {
 function openProductModal() {
     document.getElementById('productFormSection').classList.remove('hidden');
     document.getElementById('productForm').reset();
+    document.getElementById('productForm').removeAttribute('data-product-id');
 }
+
 
 function closeProductForm() {
     document.getElementById('productFormSection').classList.add('hidden');
 }
 
-function handleProductSubmit(event) {
+async function handleProductSubmit(event) {
     event.preventDefault();
 
     const productId = document.getElementById('productForm').dataset.productId;
-    const products = JSON.parse(localStorage.getItem(STORAGE_KEYS.PRODUCTS)) || [];
 
-    const formData = {
-        id: productId || Math.max(...products.map(p => p.id), 0) + 1,
+    const product = {
         name: document.getElementById('productName').value,
         category: document.getElementById('productCategory').value,
         price: parseFloat(document.getElementById('productPrice').value),
         stock: parseInt(document.getElementById('productStock').value),
         description: document.getElementById('productDescription').value,
-        image: document.getElementById('productImage').value || '📦'
+        image: document.getElementById('productImage').value
     };
 
+    let url = 'http://localhost:8080/api/addProduct';
+    let method = 'POST';
+
     if (productId) {
-        // UPDATE
-        const index = products.findIndex(p => p.id == productId);
-        products[index] = formData;
-        showNotification('Product updated successfully!');
-    } else {
-        // CREATE
-        products.push(formData);
-        showNotification('Product added successfully!');
+        url = `http://localhost:8080/api/updateProduct/${productId}`;
+        method = 'PATCH';
     }
 
-    localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
-    closeProductForm();
-    loadProductsTable();
+    const response = await fetch(url, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(product)
+    });
+
+    if (response.ok) {
+        showNotification(productId ? 'Product updated successfully!' : 'Product added successfully!');
+        closeProductForm();
+        document.getElementById('productForm').removeAttribute('data-product-id');
+        loadProductsTable();
+    } else {
+        showNotification(productId ? 'Product update failed!' : 'Product adding failed!');
+    }
 }
 
-function loadProductsTable() {
-    const products = JSON.parse(localStorage.getItem(STORAGE_KEYS.PRODUCTS)) || [];
+
+
+async function loadProductsTable() {
+    const response = await fetch('http://localhost:8080/api/getAllProducts');
+    const products = await response.json();
+
+    productList = products;
+
     const tbody = document.getElementById('productsTableBody');
 
     tbody.innerHTML = products.map(product => `
         <tr>
-            <td>#${product.id}</td>
             <td>${product.name}</td>
             <td>${product.category}</td>
             <td>LKR ${product.price.toFixed(2)}</td>
+            <td>${product.description}</td>
             <td>${product.stock}</td>
             <td>
                 <div class="action-btns">
-                    <button class="edit-btn" onclick="editProduct(${product.id})">Edit</button>
-                    <button class="delete-btn" onclick="deleteProduct(${product.id})">Delete</button>
+                    <button class="edit-btn" onclick="editProduct('${product.id}')">Edit</button>
+                    <button class="delete-btn" onclick="deleteProduct('${product.id}')">Delete</button>
                 </div>
             </td>
         </tr>
     `).join('');
 }
 
+
 function editProduct(productId) {
-    const products = JSON.parse(localStorage.getItem(STORAGE_KEYS.PRODUCTS)) || [];
-    const product = products.find(p => p.id == productId);
+    const product = productList.find(p => p.id === productId);
 
     if (product) {
         document.getElementById('productName').value = product.name;
@@ -108,20 +125,28 @@ function editProduct(productId) {
         document.getElementById('productStock').value = product.stock;
         document.getElementById('productDescription').value = product.description;
         document.getElementById('productImage').value = product.image;
+
         document.getElementById('productForm').dataset.productId = productId;
         document.getElementById('productFormSection').classList.remove('hidden');
     }
 }
 
-function deleteProduct(productId) {
+
+async function deleteProduct(productId) {
     if (confirm('Are you sure you want to delete this product?')) {
-        let products = JSON.parse(localStorage.getItem(STORAGE_KEYS.PRODUCTS)) || [];
-        products = products.filter(p => p.id != productId);
-        localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
-        showNotification('Product deleted successfully!');
-        loadProductsTable();
+        const response = await fetch(`http://localhost:8080/api/deleteById/${productId}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            showNotification('Product deleted successfully!');
+            loadProductsTable();
+        } else {
+            showNotification('Product delete failed!');
+        }
     }
 }
+
 
 // ==================== ORDERS ====================
 function loadOrdersTable() {

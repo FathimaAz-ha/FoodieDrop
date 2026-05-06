@@ -103,17 +103,19 @@ function saveCart(cart) {
 }
 
 // ==================== PRODUCT DISPLAY ====================
-function displayProducts(filter = 'all') {
-    const products = getProducts();
+async function displayProducts(filter = 'all') {
+    const response = await fetch('http://localhost:8080/api/getAllProducts');
+    const products = await response.json();
+
     const container = document.getElementById('productsGrid');
-    
+
     let filteredProducts = products;
     if (filter !== 'all') {
         filteredProducts = products.filter(p => p.category === filter);
     }
 
     container.innerHTML = filteredProducts.map(product => `
-        <div class="product-card" onclick="openProductModal(${product.id})">
+        <div class="product-card" onclick="openProductModal('${product.id}')">
             <div class="product-image">
                 <img src="${product.image}" alt="${product.name}">
             </div>
@@ -123,7 +125,7 @@ function displayProducts(filter = 'all') {
                 <p class="product-description">${product.description}</p>
                 <div class="product-footer">
                     <span class="product-price">LKR ${product.price.toFixed(2)}</span>
-                    <button class="product-btn" onclick="event.stopPropagation(); addToCartDirect(${product.id})">
+                    <button class="product-btn" onclick="event.stopPropagation(); addToCartDirect('${product.id}')">
                         <i class="fas fa-shopping-cart"></i> Add
                     </button>
                 </div>
@@ -132,6 +134,7 @@ function displayProducts(filter = 'all') {
     `).join('');
 }
 
+
 // ==================== FILTER FUNCTIONALITY ====================
 function filterProducts(category) {
     const buttons = document.querySelectorAll('.filter-btn');
@@ -139,6 +142,7 @@ function filterProducts(category) {
     event.target.classList.add('active');
     displayProducts(category);
 }
+
 
 // ==================== MODAL FUNCTIONS ====================
 let currentProductId = null;
