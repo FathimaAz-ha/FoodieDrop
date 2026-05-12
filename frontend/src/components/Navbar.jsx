@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
+import { useState } from "react";
+import { NavLink } from "react-router-dom";
+import { useCart } from "../context/CartContext";
 
 function Navbar() {
   const { cartCount, theme, toggleTheme } = useCart();
@@ -13,29 +13,49 @@ function Navbar() {
           <i className="fas fa-utensils" /> FoodieDrop
         </div>
 
-        <ul className={isOpen ? 'nav-menu active' : 'nav-menu'}>
+        <ul className={isOpen ? "nav-menu active" : "nav-menu"}>
           <li>
-            <NavLink to="/" className="nav-link" onClick={() => setIsOpen(false)}>
+            <NavLink
+              to="/"
+              className="nav-link"
+              onClick={() => setIsOpen(false)}
+            >
               Home
             </NavLink>
           </li>
           <li>
-            <NavLink to="/" className="nav-link" onClick={() => setIsOpen(false)}>
+            <NavLink
+              to="/"
+              className="nav-link"
+              onClick={() => setIsOpen(false)}
+            >
               Shop
             </NavLink>
           </li>
           <li>
-            <NavLink to="/" className="nav-link" onClick={() => setIsOpen(false)}>
+            <NavLink
+              to="/"
+              className="nav-link"
+              onClick={() => setIsOpen(false)}
+            >
               About
             </NavLink>
           </li>
           <li>
-            <NavLink to="/" className="nav-link" onClick={() => setIsOpen(false)}>
+            <NavLink
+              to="/"
+              className="nav-link"
+              onClick={() => setIsOpen(false)}
+            >
               Contact
             </NavLink>
           </li>
           <li>
-            <NavLink to="/dashboard" className="nav-link" onClick={() => setIsOpen(false)}>
+            <NavLink
+              to="/add-product"
+              className="nav-link"
+              onClick={() => setIsOpen(false)}
+            >
               Admin
             </NavLink>
           </li>
@@ -43,7 +63,7 @@ function Navbar() {
 
         <div className="nav-icons">
           <button className="theme-toggle" onClick={toggleTheme}>
-            {theme === 'dark' ? (
+            {theme === "dark" ? (
               <>
                 <i className="fas fa-sun" /> Light
               </>

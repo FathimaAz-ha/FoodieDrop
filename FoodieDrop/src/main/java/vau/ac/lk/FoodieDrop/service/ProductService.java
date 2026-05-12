@@ -13,50 +13,63 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    public String addProduct(Product data) {
+    public Product addProduct(Product data) {
         if(data.getName() != null && data.getCategory() != null && data.getPrice() != null && data.getStock() >= 0 && data.getDescription() != null){
-            productRepository.save(data);
-            return "Successfully added product!";
+            return productRepository.save(data);
         }
-        return "Product doesn't added!";
+        throw new IllegalArgumentException("Invalid product data");
     }
 
     public List<Product> getProducts() {
-        return productRepository.findAll();
+        List<Product> products = productRepository.findAll();
+        for (Product product : products) {
+            if (product.getImage() == null || product.getImage().isEmpty()) {
+                // Set a default image URL
+                product.setImage("https://via.placeholder.com/300x200?text=No+Image");
+            }
+        }
+        return products;
+    }
+
+    public Product getProductById(String id) {
+        return productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
     }
 
     public String deletById(String id) {
-        productRepository.deleteById(id);
-        return "Product deleted successfully!";
+        if (productRepository.existsById(id)) {
+            productRepository.deleteById(id);
+            return "Product deleted successfully!";
+        }
+        throw new RuntimeException("Product not found");
     }
 
-    public void updateproduct(String id, Product data) {
-        productRepository.findById(id).ifPresent(p -> {
-            if(p.getName() != null){
+    public Product updateproduct(String id, Product data) {
+        return productRepository.findById(id).map(p -> {
+            if(data.getName() != null){
                 p.setName(data.getName());
             }
 
-            if(p.getDescription() != null){
+            if(data.getDescription() != null){
                 p.setDescription(data.getDescription());
             }
 
-            if(p.getStock() != null && p.getStock() >= 0){
+            if(data.getStock() != null && data.getStock() >= 0){
                 p.setStock(data.getStock());
             }
 
-            if(p.getPrice() != null && p.getPrice() >= 0){
+            if(data.getPrice() != null && data.getPrice() >= 0){
                 p.setPrice(data.getPrice());
             }
 
-            if(p.getCategory() != null){
+            if(data.getCategory() != null){
                 p.setCategory(data.getCategory());
             }
 
-            if(p.getImage() != null){
+            if(data.getImage() != null){
                 p.setImage(data.getImage());
             }
 
-            productRepository.save(p);
-        });
+            return productRepository.save(p);
+        }).orElseThrow(() -> new RuntimeException("Product not found"));
     }
 }
