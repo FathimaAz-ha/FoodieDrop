@@ -5,7 +5,7 @@ function Dashboard() {
   const { refreshProducts, notify } = useCart();
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("products");
   const [formData, setFormData] = useState({
     name: "",
     category: "",
@@ -23,7 +23,7 @@ function Dashboard() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch("/api/getAllProducts");
+      const response = await fetch("http://localhost:8080/api/getAllProducts");
       if (!response.ok) {
         const payload = await response.json().catch(() => null);
         const message =
@@ -59,8 +59,8 @@ function Dashboard() {
     e.preventDefault();
     try {
       const url = editingProduct
-        ? `/api/updateProduct/${editingProduct.id}`
-        : "/api/addProduct";
+        ? `http://localhost:8080/api/updateProduct/${editingProduct.id}`
+        : "http://localhost:8080/api/addProduct";
       const method = editingProduct ? "PUT" : "POST";
 
       const response = await fetch(url, {
@@ -111,7 +111,7 @@ function Dashboard() {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
-        const response = await fetch(`/api/deleteById/${id}`, {
+        const response = await fetch(`http://localhost:8080/api/deleteById/${id}`, {
           method: "DELETE",
         });
         if (!response.ok) {

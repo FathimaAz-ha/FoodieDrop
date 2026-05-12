@@ -52,7 +52,7 @@ function Navbar() {
           </li>
           <li>
             <NavLink
-              to="/add-product"
+              to="/admin"
               className="nav-link"
               onClick={() => setIsOpen(false)}
             >
