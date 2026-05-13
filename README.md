@@ -1,6 +1,6 @@
 # FoodieDrop 🍕
 
-A modern full-stack food delivery application that allows users to browse fresh produce, add items to cart, and manage their orders seamlessly.
+A modern full-stack food delivery application that allows users to browse fresh produce, add items to cart, and manages their order seamlessly.
 
 ## 🌟 Features
 
